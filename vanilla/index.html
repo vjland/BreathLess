@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BreatheFlow - Buteyko Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #05070a;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .atmosphere-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #05070a;
+            z-index: -1;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .blob-1 {
+            top: -10%;
+            left: -10%;
+            width: 50%;
+            aspect-ratio: 1;
+            background: rgba(49, 46, 129, 0.2);
+            filter: blur(120px);
+        }
+
+        .blob-2 {
+            bottom: -20%;
+            right: -10%;
+            width: 60%;
+            aspect-ratio: 1;
+            background: rgba(19, 78, 74, 0.2);
+            filter: blur(150px);
+        }
+
+        .blob-3 {
+            top: 20%;
+            right: 10%;
+            width: 30%;
+            aspect-ratio: 1;
+            background: rgba(37, 99, 235, 0.1);
+            filter: blur(100px);
+        }
+
+        .pacer-core {
+            transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
+        .active-view {
+            display: block !important;
+        }
+        
+        .timer-val {
+            font-variant-numeric: tabular-nums;
+        }
+
+        input[type=range] {
+            accent-color: #14b8a6;
+        }
+    </style>
+</head>
+<body>
+    <div class="atmosphere-bg">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div id="app" class="container mx-auto px-10 py-8 max-w-6xl relative z-10 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-16">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-teal-400 to-blue-500 flex items-center justify-center">
+                    <div class="w-4 h-4 bg-white rounded-full opacity-40 animate-pulse"></div>
+                </div>
+                <h1 class="text-xl font-light tracking-widest uppercase text-slate-100">
+                    Breathe<span id="logo-span" class="font-semibold text-teal-400">Flow</span>
+                </h1>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button id="toggle-lang" class="flex items-center space-x-2 bg-white/5 border border-white/10 px-3 py-2 rounded-full hover:bg-white/10 transition-all text-[10px] tracking-widest uppercase font-bold text-slate-400">
+                    <i data-lucide="languages" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <span id="lang-btn-text">中文</span>
+                </button>
+
+                <button id="measure-cp-btn" class="flex items-center space-x-2 bg-white/5 border border-white/10 px-4 py-2 rounded-full hover:bg-white/10 transition-all text-xs tracking-widest uppercase font-bold">
+                    <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 text-teal-400"></i>
+                    <span id="cp-display" class="text-slate-300">Measure CP</span>
+                </button>
+                <div class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center overflow-hidden bg-white/5">
+                    <i data-lucide="activity" class="w-5 h-5 opacity-40"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content -->
+        <div id="view-container" class="flex-1">
+            <!-- Views will be injected here -->
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-24 pb-12 text-center">
+            <p id="copyright-text" class="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">
+                © 2026 ButeykoFlow Protocol
+            </p>
+            <div class="h-px w-8 bg-white/10 mx-auto mt-4"></div>
+        </footer>
+    </div>
+
+    <!-- Templates -->
+    <template id="tpl-dashboard">
+        <div class="grid gap-16 fade-in">
+            <section>
+                <div class="flex items-center justify-between mb-10">
+                    <h2 id="training-protocols-title" class="text-xs uppercase tracking-[0.4em] font-black text-teal-400/60">Training Protocols</h2>
+                    <div class="h-px w-24 bg-white/10 ml-6"></div>
+                </div>
+                <div id="session-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Sessions injected here -->
+                </div>
+            </section>
+
+            <section class="relative p-12 rounded-[40px] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-12">
+                    <div class="flex-1 space-y-6">
+                        <h3 id="why-title" class="text-3xl font-light tracking-tight text-white leading-tight">Master the Art of <br/><span class="font-bold text-teal-400">Normal Breathing</span></h3>
+                        <p id="why-desc" class="text-slate-400 leading-relaxed text-sm max-w-lg">
+                            Buteyko helps synchronize breathing with metabolic needs. High CO2 tolerance is the foundation of peak performance and deep recovery.
+                        </p>
+                    </div>
+                    <div class="flex gap-4 text-center">
+                        <div class="px-6 py-4 bg-teal-400/10 rounded-2xl border border-teal-400/20 min-w-[120px]">
+                            <p class="text-xl font-bold text-teal-400 tracking-tighter">24s</p>
+                            <p id="avg-cp-label" class="text-[10px] uppercase font-bold text-teal-600/60 leading-none mt-1">Average CP</p>
+                        </div>
+                        <div class="px-6 py-4 bg-blue-400/10 rounded-2xl border border-blue-400/20 min-w-[120px]">
+                            <p class="text-xl font-bold text-blue-400 tracking-tighter">12.4k</p>
+                            <p id="total-breaths-label" class="text-[10px] uppercase font-bold text-blue-600/60 leading-none mt-1">Total Breaths</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute top-0 right-0 w-[500px] h-full bg-teal-500/5 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
+            </section>
+        </div>
+    </template>
+
+    <template id="tpl-cp-test">
+        <div class="flex flex-col items-center py-12 fade-in">
+            <div class="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden">
+                <div class="flex justify-between items-start mb-8 relative z-10">
+                    <div>
+                        <h2 id="diag-label" class="text-xs font-black text-teal-400 uppercase tracking-[0.3em]">Diagnostics</h2>
+                        <h3 id="cp-label" class="text-2xl font-light text-slate-100 mt-1">Control Pause</h3>
+                    </div>
+                    <button id="cp-info-toggle" class="p-2 text-slate-600 hover:text-teal-400 transition-colors">
+                        <i data-lucide="info" class="w-4.5 h-4.5"></i>
+                    </button>
+                </div>
+
+                <div id="cp-info-box" class="hidden overflow-hidden mb-8 bg-teal-500/5 rounded-2xl p-5 text-[10px] text-teal-200/60 leading-loose tracking-wide border border-teal-500/10">
+                    <strong id="protocol-label" class="text-teal-400 uppercase font-black tracking-widest block mb-2">Protocol</strong>
+                    <ol id="protocol-steps" class="list-decimal list-inside space-y-2">
+                        <!-- Steps injected here -->
+                    </ol>
+                </div>
+
+                <div class="flex flex-col items-center py-4 relative z-10">
+                    <div id="cp-timer-display" class="text-9xl font-thin timer-val text-white tracking-tighter mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                        0
+                    </div>
+
+                    <div class="flex space-x-6">
+                        <button id="cp-start-stop" class="w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-teal-500 text-[#05070a] shadow-[0_0_50px_rgba(20,184,166,0.3)]">
+                            <i data-lucide="play" class="fill-current w-7 h-7 ml-1"></i>
+                        </button>
+                        <button id="cp-reset" class="w-20 h-20 rounded-full bg-white/5 border border-white/5 text-slate-500 hover:text-slate-300 flex items-center justify-center transition-all">
+                            <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="cp-result-box" class="hidden mt-10 p-5 bg-teal-500/5 border border-teal-500/10 rounded-3xl flex items-center space-x-4">
+                    <i data-lucide="check-circle-2" class="text-teal-400 w-6 h-6"></i>
+                    <div>
+                        <p id="assess-label" class="text-xs font-black text-teal-400 uppercase tracking-widest">Assessment: 0s</p>
+                        <p id="assess-desc" class="text-[10px] text-slate-500 mt-1 uppercase tracking-tight">Foundation</p>
+                    </div>
+                </div>
+                <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-teal-500/5 blur-3xl rounded-full"></div>
+            </div>
+            <button id="cp-back" class="mt-8 text-slate-500 hover:text-slate-300 underline text-xs tracking-widest uppercase">Return to Sessions</button>
+        </div>
+    </template>
+
+    <template id="tpl-session">
+        <div class="min-h-[85vh] flex flex-col pt-8 pb-12 fade-in">
+            <div class="flex justify-between items-center mb-12">
+                <button id="session-back" class="flex items-center text-slate-500 hover:text-teal-400 transition-colors group text-xs tracking-widest uppercase font-bold">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
+                    <span id="session-back-text">Return to Protocol</span>
+                </button>
+
+                <button id="settings-toggle" class="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all text-[10px] uppercase tracking-widest font-bold bg-white/5 text-slate-400 hover:text-slate-100">
+                    <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+                    <span id="settings-btn-text">Custom Setup</span>
+                </button>
+            </div>
+
+            <div id="settings-panel" class="hidden overflow-hidden mb-12 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label id="label-inhale" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Inhale</label>
+                            </div>
+                            <input type="range" id="range-inhale" min="1" max="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label id="label-exhale" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Exhale</label>
+                            </div>
+                            <input type="range" id="range-exhale" min="1" max="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label id="label-pause" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Post-Exhale Pause</label>
+                            </div>
+                            <input type="range" id="range-pause" min="0" max="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <label id="label-duration" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Session Duration</label>
+                            </div>
+                            <input type="range" id="range-duration" min="1" max="60" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 pt-8 border-t border-white/5 flex justify-center">
+                    <button id="reset-defaults" class="flex items-center space-x-2 text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest">
+                        <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                        <span id="reset-defaults-text">Reset to Protocol Defaults</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col items-center max-w-2xl mx-auto w-full">
+                <div class="text-center mb-12">
+                    <h2 id="session-title" class="text-4xl font-light text-slate-100 mb-4 tracking-tight">Session Title</h2>
+                    <div class="flex items-center justify-center space-x-6 text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">
+                        <span class="flex items-center">
+                            <i data-lucide="clock" class="w-3.5 h-3.5 mr-2 text-teal-400"></i>
+                            <span id="session-timer" class="timer-val">5:00</span>
+                        </span>
+                        <span class="flex items-center">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 mr-2 text-teal-400"></i>
+                            <span id="session-intensity">Moderate</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Pacer -->
+                <div class="flex flex-col items-center justify-center space-y-12 h-80">
+                    <div class="relative flex items-center justify-center w-[300px] h-[300px]">
+                        <div class="absolute inset-0 border-[1px] border-white/5 rounded-full"></div>
+                        <div id="pacer-ring" class="absolute inset-8 border-[1px] border-white/10 rounded-full opacity-50"></div>
+                        
+                        <div id="pacer-core" class="w-48 h-48 rounded-full bg-gradient-to-b from-teal-500/10 to-transparent flex flex-col items-center justify-center backdrop-blur-xl border border-teal-500/20 shadow-[0_0_80px_rgba(20,184,166,0.15)] z-10 transition-all duration-1000">
+                            <span id="pacer-phase-label" class="text-[10px] uppercase tracking-[0.3em] text-teal-400 font-bold mb-1 opacity-80">Expansion</span>
+                            <span id="pacer-count" class="text-7xl font-thin tracking-tighter text-white timer-val">0</span>
+                            <span id="pacer-unit" class="text-[10px] uppercase tracking-widest text-slate-500 mt-1">SECONDS</span>
+                        </div>
+
+                        <div class="absolute top-0 flex flex-col items-center">
+                            <div id="inhale-indicator" class="w-px h-6 bg-gradient-to-b from-teal-400 to-transparent transition-all opacity-20"></div>
+                            <span id="inhale-text" class="text-[8px] uppercase tracking-[0.3em] font-bold mt-2 text-slate-600">Inhale</span>
+                        </div>
+                        <div class="absolute bottom-0 flex flex-col items-center">
+                            <span id="exhale-text" class="text-[8px] uppercase tracking-[0.3em] font-bold mb-2 text-slate-600">Exhale</span>
+                            <div id="exhale-indicator" class="w-px h-6 bg-gradient-to-t from-white/20 to-transparent transition-all opacity-20"></div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h3 id="pacer-status" class="text-2xl font-light tracking-[0.2em] text-slate-300 uppercase">Ready</h3>
+                    </div>
+                </div>
+
+                <div class="mt-16 flex flex-col items-center space-y-6">
+                    <button id="session-start" class="px-14 py-4 rounded-full text-sm font-black uppercase tracking-[0.3em] transition-all duration-500 transform active:scale-95 bg-teal-500 text-[#05070a] hover:bg-teal-400 shadow-[0_0_40px_rgba(20,184,166,0.3)]">
+                        Commence
+                    </button>
+                    <p id="cycles-label" class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                        Cycles Completed: <span id="cycles-count" class="text-teal-400">0</span>
+                    </p>
+                    <button id="session-restart" class="flex items-center space-x-2 text-slate-500 hover:text-slate-300 transition-colors text-[10px] font-bold uppercase tracking-widest pt-2">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        <span id="restart-text">Restart Session</span>
+                    </button>
+                </div>
+
+                <div class="mt-16 p-8 bg-white/[0.03] rounded-[32px] border border-white/5 max-w-lg w-full">
+                    <h4 id="guide-label" class="font-bold text-teal-400 mb-3 text-[10px] uppercase tracking-[0.3em]">Protocol Guide</h4>
+                    <p id="guide-desc" class="text-slate-400 text-sm leading-relaxed font-light">
+                        Protocol instructions here.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // --- Data & Initialization ---
+        const DEFAULT_SESSIONS = [
+            {
+                id: 'stress-relief-1',
+                title: 'Calm the Storm',
+                description: 'Gentle nasal breathing to lower cortisol and soothe the nervous system.',
+                goal: 'STRESS',
+                durationMinutes: 5,
+                pattern: { inhale: 4, pauseAfterInhale: 0, exhale: 6, pauseAfterExhale: 2 },
+                intensity: 'Light',
+            },
+            {
+                id: 'sleep-prep-1',
+                title: 'Deep Slumber',
+                description: 'Minimal air volume to prepare your body for deep, restorative sleep.',
+                goal: 'SLEEP',
+                durationMinutes: 10,
+                pattern: { inhale: 3, pauseAfterInhale: 0, exhale: 5, pauseAfterExhale: 5 },
+                intensity: 'Light',
+            },
+            {
+                id: 'focus-sharp-1',
+                title: 'Cognitive Flow',
+                description: 'Steady oxygenation to sharpen focus and eliminate brain fog.',
+                goal: 'FOCUS',
+                durationMinutes: 7,
+                pattern: { inhale: 5, pauseAfterInhale: 0, exhale: 5, pauseAfterExhale: 2 },
+                intensity: 'Moderate',
+            },
+            {
+                id: 'general-health-1',
+                title: 'The Foundation',
+                description: 'The standard Buteyko reduced breathing method for daily maintenance.',
+                goal: 'GENERAL',
+                durationMinutes: 15,
+                pattern: { inhale: 4, pauseAfterInhale: 0, exhale: 4, pauseAfterExhale: 4 },
+                intensity: 'Moderate',
+            },
+        ];
+
+        const TRANSLATIONS = {
+            en: {
+                appName: 'BreatheFlow',
+                measureCP: 'Measure CP',
+                trainingProtocols: 'Training Protocols',
+                whyTitle: 'Master the Art of <br/><span class="font-bold text-teal-400">Normal Breathing</span>',
+                whyDesc: 'Buteyko helps synchronize breathing with metabolic needs. High CO2 tolerance is the foundation of peak performance and deep recovery.',
+                avgCp: 'Average CP',
+                totalBreaths: 'Total Breaths',
+                copyright: '© 2026 ButeykoFlow Protocol',
+                diag: 'Diagnostics',
+                cp: 'Control Pause',
+                protocol: 'Protocol',
+                protocolSteps: [
+                    'Exhale naturally through nose.',
+                    'Hold breath; start chronometer.',
+                    'Wait for the first somatic signal to inhale.',
+                    'End hold. Return to calm nasal breathing.'
+                ],
+                assessLabel: 'Assessment',
+                levels: ['Level: Foundation', 'Level: Advanced Transition', 'Level: Elite Homeostasis'],
+                backToSessions: 'Return to Sessions',
+                backToProtocol: 'Return to Protocol',
+                customSetup: 'Custom Setup',
+                closeSetup: 'Close Setup',
+                labels: { inhale: 'Inhale', exhale: 'Exhale', pause: 'Post-Exhale Pause', duration: 'Session Duration' },
+                resetDefaults: 'Reset to Protocol Defaults',
+                guideLabel: 'Protocol Guide',
+                cycles: 'Cycles Completed',
+                restart: 'Restart Session',
+                commence: 'Commence',
+                pauseBtn: 'Pause',
+                pacerPhases: { expansion: 'Expansion', reduction: 'Reduction', seconds: 'SECONDS', inhale: 'Inhale', exhale: 'Exhale' },
+                goals: { STRESS: 'STRESS', SLEEP: 'SLEEP', FOCUS: 'FOCUS', GENERAL: 'GENERAL' },
+                sessionGuidePrefix: 'Maintain high-level relaxation. Nasal only. Aim for a distinct but tolerable sense of air reduction.',
+                intensities: { Light: 'Light', Moderate: 'Moderate', Advanced: 'Advanced' },
+                ready: 'Ready'
+            },
+            zh: {
+                appName: '呼吸流',
+                measureCP: '测量闭气 (CP)',
+                trainingProtocols: '训练方案',
+                whyTitle: '掌握 <span class="font-bold text-teal-400">正常呼吸</span> 的艺术',
+                whyDesc: '布泰科(Buteyko)方法帮助呼吸与代谢需求同步。高二氧化碳耐受度是巅峰表现和深度恢复的基础。',
+                avgCp: '平均 CP',
+                totalBreaths: '总呼吸次数',
+                copyright: '© 2026 ButeykoFlow 呼吸方案',
+                diag: '诊断',
+                cp: '闭气练习 (CP)',
+                protocol: '步骤',
+                protocolSteps: [
+                    '通过鼻子自然呼气。',
+                    '捏住鼻子屏息；开始计时。',
+                    '等待第一个身体发出的吸气信号。',
+                    '结束屏息。恢复平静的鼻呼吸。'
+                ],
+                assessLabel: '评估结果',
+                levels: ['基础级', '进阶级', '精英级'],
+                backToSessions: '返回主界面',
+                backToProtocol: '返回方案',
+                customSetup: '自定义设置',
+                closeSetup: '关闭设置',
+                labels: { inhale: '吸气', exhale: '呼气', pause: '呼气后暂停', duration: '练习时长' },
+                resetDefaults: '重置为默认设置',
+                guideLabel: '方案指南',
+                cycles: '已完成周期',
+                restart: '重启练习',
+                commence: '开始',
+                pauseBtn: '暂停',
+                pacerPhases: { expansion: '扩张', reduction: '减量', seconds: '秒', inhale: '吸气', exhale: '呼气' },
+                goals: { STRESS: '减压', SLEEP: '改善睡眠', FOCUS: '专注', GENERAL: '日常' },
+                sessionGuidePrefix: '保持高度放松。仅用鼻子。目标是产生明显但可接受的减量感。',
+                intensities: { Light: '轻度', Moderate: '中度', Advanced: '高级' },
+                ready: '就绪'
+            }
+        };
+
+        let state = {
+            lang: localStorage.getItem('breathflow_lang') || 'en',
+            sessions: JSON.parse(localStorage.getItem('breathflow_sessions')) || DEFAULT_SESSIONS,
+            lastCP: localStorage.getItem('breathflow_lastcp') || null,
+            activeView: 'dashboard',
+            activeSession: null,
+            cpTimer: { seconds: 0, interval: null, isRunning: false },
+            sessionTimer: { seconds: 0, interval: null, isRunning: false, cycles: 0, phase: 'Inhale', phaseTime: 0 }
+        };
+
+        const viewContainer = document.getElementById('view-container');
+
+        // --- Utils ---
+        function saveState() {
+            localStorage.setItem('breathflow_lang', state.lang);
+            localStorage.setItem('breathflow_sessions', JSON.stringify(state.sessions));
+            if (state.lastCP) localStorage.setItem('breathflow_lastcp', state.lastCP);
+        }
+
+        function formatTime(s) {
+            const m = Math.floor(s / 60);
+            const r = s % 60;
+            return `${m}:${r.toString().padStart(2, '0')}`;
+        }
+
+        function getIcon(goal) {
+            const icons = {
+                STRESS: 'wind',
+                SLEEP: 'moon',
+                FOCUS: 'zap',
+                GENERAL: 'activity'
+            };
+            return icons[goal] || 'activity';
+        }
+
+        function render() {
+            const t = TRANSLATIONS[state.lang];
+            
+            // Header updates
+            document.getElementById('lang-btn-text').textContent = state.lang === 'en' ? '中文' : 'EN';
+            document.getElementById('cp-display').textContent = state.lastCP ? `CP: ${state.lastCP}s` : t.measureCP;
+            document.getElementById('copyright-text').textContent = t.copyright;
+            
+            // View navigation
+            viewContainer.innerHTML = '';
+            const tplId = state.activeView === 'dashboard' ? 'tpl-dashboard' : 
+                          state.activeView === 'cp-test' ? 'tpl-cp-test' : 'tpl-session';
+            const clone = document.getElementById(tplId).content.cloneNode(true);
+            viewContainer.appendChild(clone);
+
+            if (state.activeView === 'dashboard') renderDashboard(t);
+            else if (state.activeView === 'cp-test') renderCPTest(t);
+            else if (state.activeView === 'session') renderSession(t);
+
+            lucide.createIcons();
+        }
+
+        // --- View Handlers ---
+        function renderDashboard(t) {
+            document.getElementById('training-protocols-title').textContent = t.trainingProtocols;
+            document.getElementById('why-title').innerHTML = t.whyTitle;
+            document.getElementById('why-desc').textContent = t.whyDesc;
+            document.getElementById('avg-cp-label').textContent = t.avgCp;
+            document.getElementById('total-breaths-label').textContent = t.totalBreaths;
+
+            const grid = document.getElementById('session-grid');
+            state.sessions.forEach(session => {
+                const card = document.createElement('button');
+                card.className = "group bg-white/5 backdrop-blur-sm p-8 rounded-[32px] border border-white/5 text-left transition-all relative overflow-hidden active:scale-95";
+                
+                const sessionT = t.lang === 'en' ? session : 
+                    TRANSLATIONS.zh.sessions?.[session.id] || session; // Simplify translation for card
+
+                card.onclick = () => {
+                   state.activeSession = { ...session };
+                   state.activeView = 'session';
+                   render();
+                };
+
+                card.innerHTML = `
+                    <div class="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="${getIcon(session.goal)}"></i>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-black text-teal-400 uppercase tracking-widest leading-none">${t.goals[session.goal]}</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${session.durationMinutes} MIN</span>
+                        </div>
+                        <h3 class="text-xl font-medium text-slate-100">${session.title}</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed line-clamp-2">${session.description}</p>
+                        <div class="pt-4 flex items-center text-[10px] font-bold text-teal-400/80 uppercase tracking-tighter">
+                            <i data-lucide="chevron-right" class="w-3.5 h-3.5 mr-1 group-hover:translate-x-1 transition-transform"></i>
+                            ${t.commence}
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderCPTest(t) {
+            document.getElementById('diag-label').textContent = t.diag;
+            document.getElementById('cp-label').textContent = t.cp;
+            document.getElementById('protocol-label').textContent = t.protocol;
+            document.getElementById('cp-timer-display').textContent = state.cpTimer.seconds;
+            document.getElementById('cp-back').textContent = t.backToSessions;
+            
+            const stepsList = document.getElementById('protocol-steps');
+            t.protocolSteps.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                stepsList.appendChild(li);
+            });
+
+            const startBtn = document.getElementById('cp-start-stop');
+            const startIcon = startBtn.querySelector('i');
+            if (state.cpTimer.isRunning) {
+                startBtn.className = "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-transparent border-2 border-red-500/40 text-red-500";
+                startIcon.setAttribute('data-lucide', 'square');
+                startIcon.className = "fill-current w-5 h-5";
+            } else {
+                startBtn.className = "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-teal-500 text-[#05070a] shadow-[0_0_50px_rgba(20,184,166,0.3)]";
+                startIcon.setAttribute('data-lucide', 'play');
+                startIcon.className = "fill-current w-7 h-7 ml-1";
+            }
+
+            document.getElementById('cp-info-toggle').onclick = () => {
+                const box = document.getElementById('cp-info-box');
+                box.classList.toggle('hidden');
+            };
+
+            document.getElementById('cp-back').onclick = () => {
+                clearInterval(state.cpTimer.interval);
+                state.cpTimer.isRunning = false;
+                state.cpTimer.seconds = 0;
+                state.activeView = 'dashboard';
+                render();
+            };
+
+            document.getElementById('cp-reset').onclick = () => {
+                clearInterval(state.cpTimer.interval);
+                state.cpTimer.isRunning = false;
+                state.cpTimer.seconds = 0;
+                document.getElementById('cp-result-box').classList.add('hidden');
+                render();
+            };
+
+            startBtn.onclick = () => {
+                if (state.cpTimer.isRunning) {
+                    clearInterval(state.cpTimer.interval);
+                    state.cpTimer.isRunning = false;
+                    state.lastCP = state.cpTimer.seconds;
+                    saveState();
+                    showCPResult(t);
+                    render();
+                } else {
+                    state.cpTimer.seconds = 0;
+                    state.cpTimer.isRunning = true;
+                    state.cpTimer.interval = setInterval(() => {
+                        state.cpTimer.seconds++;
+                        document.getElementById('cp-timer-display').textContent = state.cpTimer.seconds;
+                    }, 1000);
+                    render();
+                }
+            };
+        }
+
+        function showCPResult(t) {
+            const box = document.getElementById('cp-result-box');
+            box.classList.remove('hidden');
+            document.getElementById('assess-label').textContent = `${t.assessLabel}: ${state.lastCP}s`;
+            const level = state.lastCP < 20 ? t.levels[0] : state.lastCP < 40 ? t.levels[1] : t.levels[2];
+            document.getElementById('assess-desc').textContent = level;
+        }
+
+        function renderSession(t) {
+            const s = state.activeSession;
+            document.getElementById('session-back-text').textContent = t.backToProtocol;
+            document.getElementById('settings-btn-text').textContent = t.customSetup;
+            document.getElementById('session-title').textContent = s.title;
+            document.getElementById('session-intensity').textContent = t.intensities[s.intensity];
+            document.getElementById('session-timer').textContent = formatTime(state.sessionTimer.isRunning ? state.sessionTimer.seconds : s.durationMinutes * 60);
+            document.getElementById('guide-label').textContent = t.guideLabel;
+            document.getElementById('guide-desc').textContent = `${s.description} ${t.sessionGuidePrefix}`;
+            document.getElementById('cycles-label').innerHTML = `${t.cycles}: <span id="cycles-count" class="text-teal-400 font-bold">${state.sessionTimer.cycles}</span>`;
+            document.getElementById('restart-text').textContent = t.restart;
+            document.getElementById('reset-defaults-text').textContent = t.resetDefaults;
+            
+            // Setting labels
+            document.getElementById('label-inhale').textContent = `${t.labels.inhale} (${s.pattern.inhale}s)`;
+            document.getElementById('label-exhale').textContent = `${t.labels.exhale} (${s.pattern.exhale}s)`;
+            document.getElementById('label-pause').textContent = `${t.labels.pause} (${s.pattern.pauseAfterExhale}s)`;
+            document.getElementById('label-duration').textContent = `${t.labels.duration} (${s.durationMinutes}m)`;
+
+            // Button state
+            const startBtn = document.getElementById('session-start');
+            startBtn.textContent = state.sessionTimer.isRunning ? t.pauseBtn : t.commence;
+            startBtn.className = state.sessionTimer.isRunning ? 
+                "px-14 py-4 rounded-full text-sm font-black uppercase tracking-[0.3em] transition-all duration-500 transform active:scale-95 bg-transparent text-slate-300 border border-white/20 hover:border-white/40" :
+                "px-14 py-4 rounded-full text-sm font-black uppercase tracking-[0.3em] transition-all duration-500 transform active:scale-95 bg-teal-500 text-[#05070a] hover:bg-teal-400 shadow-[0_0_40px_rgba(20,184,166,0.3)]";
+
+            // Event Listeners
+            document.getElementById('session-back').onclick = () => {
+                exitSession();
+                state.activeView = 'dashboard';
+                render();
+            };
+
+            document.getElementById('settings-toggle').onclick = () => {
+                const panel = document.getElementById('settings-panel');
+                panel.classList.toggle('hidden');
+                document.getElementById('settings-btn-text').textContent = panel.classList.contains('hidden') ? t.customSetup : t.closeSetup;
+            };
+
+            // Range controls
+            const syncRange = (id, key, subkey = null) => {
+                const el = document.getElementById(id);
+                el.value = subkey ? s.pattern[subkey] : s[key];
+                el.oninput = (e) => {
+                    const val = parseInt(e.target.value);
+                    if (subkey) s.pattern[subkey] = val;
+                    else s[key] = val;
+                    
+                    // Update main session list
+                    const idx = state.sessions.findIndex(item => item.id === s.id);
+                    state.sessions[idx] = { ...s };
+                    saveState();
+                    render();
+                };
+            };
+
+            syncRange('range-inhale', 'pattern', 'inhale');
+            syncRange('range-exhale', 'pattern', 'exhale');
+            syncRange('range-pause', 'pattern', 'pauseAfterExhale');
+            syncRange('range-duration', 'durationMinutes');
+
+            document.getElementById('reset-defaults').onclick = () => {
+                const defaults = DEFAULT_SESSIONS.find(item => item.id === s.id);
+                state.activeSession = { ...defaults };
+                const idx = state.sessions.findIndex(item => item.id === s.id);
+                state.sessions[idx] = { ...defaults };
+                saveState();
+                render();
+            };
+
+            document.getElementById('session-restart').onclick = () => {
+                state.sessionTimer.isRunning = false;
+                clearInterval(state.sessionTimer.interval);
+                state.sessionTimer.seconds = s.durationMinutes * 60;
+                state.sessionTimer.cycles = 0;
+                state.sessionTimer.phase = 'Inhale';
+                state.sessionTimer.phaseTime = s.pattern.inhale;
+                render();
+            };
+
+            startBtn.onclick = () => toggleSession(t);
+        }
+
+        function exitSession() {
+            clearInterval(state.sessionTimer.interval);
+            state.sessionTimer.isRunning = false;
+            state.sessionTimer.cycles = 0;
+        }
+
+        function toggleSession(t) {
+            if (state.sessionTimer.isRunning) {
+                clearInterval(state.sessionTimer.interval);
+                state.sessionTimer.isRunning = false;
+            } else {
+                if (state.sessionTimer.seconds <= 0) {
+                    state.sessionTimer.seconds = state.activeSession.durationMinutes * 60;
+                    state.sessionTimer.cycles = 0;
+                }
+                state.sessionTimer.isRunning = true;
+                state.sessionTimer.phaseTime = state.activeSession.pattern.inhale;
+                state.sessionTimer.interval = setInterval(() => tickSession(t), 1000);
+            }
+            render();
+        }
+
+        function tickSession(t) {
+            state.sessionTimer.seconds--;
+            state.sessionTimer.phaseTime--;
+
+            if (state.sessionTimer.seconds <= 0) {
+                clearInterval(state.sessionTimer.interval);
+                state.sessionTimer.isRunning = false;
+                render();
+                return;
+            }
+
+            if (state.sessionTimer.phaseTime <= 0) {
+                transitionPhase(t);
+            }
+
+            updatePacerUI(t);
+            document.getElementById('session-timer').textContent = formatTime(state.sessionTimer.seconds);
+        }
+
+        function transitionPhase(t) {
+            const pattern = state.activeSession.pattern;
+            const phases = ['Inhale', 'Exhale', 'Pause (Empty)'];
+            let currentIdx = phases.indexOf(state.sessionTimer.phase);
+            
+            if (state.sessionTimer.phase === 'Inhale') {
+                state.sessionTimer.phase = 'Exhale';
+                state.sessionTimer.phaseTime = pattern.exhale;
+            } else if (state.sessionTimer.phase === 'Exhale') {
+                if (pattern.pauseAfterExhale > 0) {
+                    state.sessionTimer.phase = 'Pause (Empty)';
+                    state.sessionTimer.phaseTime = pattern.pauseAfterExhale;
+                } else {
+                    state.sessionTimer.phase = 'Inhale';
+                    state.sessionTimer.phaseTime = pattern.inhale;
+                    state.sessionTimer.cycles++;
+                }
+            } else {
+                state.sessionTimer.phase = 'Inhale';
+                state.sessionTimer.phaseTime = pattern.inhale;
+                state.sessionTimer.cycles++;
+            }
+            
+            document.getElementById('cycles-count').textContent = state.sessionTimer.cycles;
+        }
+
+        function updatePacerUI(t) {
+            const core = document.getElementById('pacer-core');
+            const count = document.getElementById('pacer-count');
+            const status = document.getElementById('pacer-status');
+            const phaseLabel = document.getElementById('pacer-phase-label');
+            const inhaleInd = document.getElementById('inhale-indicator');
+            const exhaleInd = document.getElementById('exhale-indicator');
+            const ring = document.getElementById('pacer-ring');
+
+            count.textContent = state.sessionTimer.phaseTime;
+            
+            const phaseMap = {
+                'Inhale': { label: t.pacerPhases.expansion, status: t.pacerPhases.inhale, scale: 1.2, opacity: 1 },
+                'Exhale': { label: t.pacerPhases.reduction, status: t.pacerPhases.exhale, scale: 0.8, opacity: 0.6 },
+                'Pause (Empty)': { label: t.pacerPhases.reduction, status: t.cp, scale: 0.7, opacity: 0.4 }
+            };
+
+            const ui = phaseMap[state.sessionTimer.phase];
+            phaseLabel.textContent = ui.label;
+            status.textContent = ui.status;
+            core.style.transform = `scale(${ui.scale})`;
+            core.style.opacity = ui.opacity;
+            
+            inhaleInd.style.opacity = state.sessionTimer.phase === 'Inhale' ? '1' : '0.2';
+            inhaleInd.style.height = state.sessionTimer.phase === 'Inhale' ? '3rem' : '1.5rem';
+            exhaleInd.style.opacity = state.sessionTimer.phase === 'Exhale' ? '1' : '0.2';
+            exhaleInd.style.height = state.sessionTimer.phase === 'Exhale' ? '3rem' : '1.5rem';
+            
+            if (ring) {
+                ring.style.opacity = state.sessionTimer.isRunning ? '1' : '0.5';
+                ring.style.transform = `scale(${state.sessionTimer.isRunning ? 1.05 : 1})`;
+            }
+        }
+
+        // --- Global Events ---
+        document.getElementById('toggle-lang').onclick = () => {
+            state.lang = state.lang === 'en' ? 'zh' : 'en';
+            saveState();
+            render();
+        };
+
+        document.getElementById('measure-cp-btn').onclick = () => {
+            state.activeView = 'cp-test';
+            render();
+        };
+
+        // Initialize
+        render();
+    </script>
+</body>
+</html>
