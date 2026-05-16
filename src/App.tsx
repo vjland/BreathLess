@@ -69,9 +69,7 @@ export default function App() {
               <div className="w-4 h-4 bg-white rounded-full opacity-40 animate-pulse" />
             </div>
             <h1 className="text-xl font-light tracking-widest uppercase text-slate-100">
-              {t.appName.split(/(?=[A-Z])|(?<=流)/).map((part, i) => (
-                <span key={i} className={i === 1 ? "font-semibold text-teal-400" : ""}>{part}</span>
-              ))}
+              Breathe <span className="font-semibold text-teal-400">less</span>
             </h1>
           </div>
           

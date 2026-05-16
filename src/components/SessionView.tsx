@@ -114,7 +114,7 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
                   </div>
                   <input 
                     type="range" 
-                    min={0} 
+                    min={SESSION_LIMITS.MIN_BREATH} 
                     max={SESSION_LIMITS.MAX_BREATH} 
                     value={session.pattern.pauseAfterExhale}
                     onChange={(e) => onUpdate({ ...session, pattern: { ...session.pattern, pauseAfterExhale: parseInt(e.target.value) } })}

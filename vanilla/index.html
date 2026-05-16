@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BreatheFlow - Buteyko Protocol</title>
+    <title>Breathe less</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
@@ -103,7 +103,7 @@
                     <div class="w-4 h-4 bg-white rounded-full opacity-40 animate-pulse"></div>
                 </div>
                 <h1 class="text-xl font-light tracking-widest uppercase text-slate-100">
-                    Breathe<span id="logo-span" class="font-semibold text-teal-400">Flow</span>
+                    Breathe <span id="logo-span" class="font-semibold text-teal-400">less</span>
                 </h1>
             </div>
             
@@ -243,13 +243,13 @@
                             <div class="flex justify-between mb-2">
                                 <label id="label-inhale" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Inhale</label>
                             </div>
-                            <input type="range" id="range-inhale" min="1" max="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                            <input type="range" id="range-inhale" min="1" max="10" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
                         </div>
                         <div>
                             <div class="flex justify-between mb-2">
                                 <label id="label-exhale" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Exhale</label>
                             </div>
-                            <input type="range" id="range-exhale" min="1" max="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                            <input type="range" id="range-exhale" min="1" max="10" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
                         </div>
                     </div>
                     <div class="space-y-6">
@@ -257,13 +257,13 @@
                             <div class="flex justify-between mb-2">
                                 <label id="label-pause" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Post-Exhale Pause</label>
                             </div>
-                            <input type="range" id="range-pause" min="0" max="20" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                            <input type="range" id="range-pause" min="1" max="10" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
                         </div>
                         <div>
                             <div class="flex justify-between mb-2">
                                 <label id="label-duration" class="text-[10px] font-black text-teal-400 uppercase tracking-widest">Session Duration</label>
                             </div>
-                            <input type="range" id="range-duration" min="1" max="60" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
+                            <input type="range" id="range-duration" min="1" max="10" class="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-teal-500">
                         </div>
                     </div>
                 </div>
@@ -292,9 +292,23 @@
 
                 <!-- Pacer -->
                 <div class="flex flex-col items-center justify-center space-y-12 h-80">
-                    <div class="relative flex items-center justify-center w-[300px] h-[300px]">
-                        <div class="absolute inset-0 border-[1px] border-white/5 rounded-full"></div>
-                        <div id="pacer-ring" class="absolute inset-8 border-[1px] border-white/10 rounded-full opacity-50"></div>
+                    <div class="relative flex items-center justify-center w-[320px] h-[320px]">
+                        <!-- Clock SVG -->
+                        <svg id="pacer-clock" class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
+                           <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5" />
+                           <path id="arc-inhale" d="" fill="none" stroke="rgba(20,184,166,0.3)" stroke-width="2" />
+                           <path id="arc-exhale" d="" fill="none" stroke="rgba(99,102,241,0.2)" stroke-width="2" />
+                           <path id="arc-pause" d="" fill="none" stroke="rgba(239, 68, 68, 0.2)" stroke-width="2" />
+                           <g id="pacer-orbit-group" style="transform-origin: 50% 50%; transition: transform 1.05s linear;">
+                             <!-- Invisible spacer to center the group origin -->
+                             <circle cx="50" cy="50" r="48" fill="transparent"></circle>
+                             <circle id="pacer-dot" cx="50" cy="2" r="3" fill="white" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));" />
+                             <circle id="pacer-dot-pulse" cx="50" cy="2" r="5" fill="rgba(255,255,255,0.2)" class="animate-pulse" />
+                           </g>
+                        </svg>
+
+                        <div class="absolute inset-4 border-[1px] border-white/5 rounded-full"></div>
+                        <div id="pacer-ring" class="absolute inset-10 border-[1px] border-white/10 rounded-full opacity-50 transition-all duration-1000"></div>
                         
                         <div id="pacer-core" class="w-48 h-48 rounded-full bg-gradient-to-b from-teal-500/10 to-transparent flex flex-col items-center justify-center backdrop-blur-xl border border-teal-500/20 shadow-[0_0_80px_rgba(20,184,166,0.15)] z-10 transition-all duration-1000">
                             <span id="pacer-phase-label" class="text-[10px] uppercase tracking-[0.3em] text-teal-400 font-bold mb-1 opacity-80">Expansion</span>
@@ -374,7 +388,7 @@
                 title: 'The Foundation',
                 description: 'The standard Buteyko reduced breathing method for daily maintenance.',
                 goal: 'GENERAL',
-                durationMinutes: 15,
+                durationMinutes: 10,
                 pattern: { inhale: 4, pauseAfterInhale: 0, exhale: 4, pauseAfterExhale: 4 },
                 intensity: 'Moderate',
             },
@@ -382,7 +396,7 @@
 
         const TRANSLATIONS = {
             en: {
-                appName: 'BreatheFlow',
+                appName: 'Breathe less',
                 measureCP: 'Measure CP',
                 trainingProtocols: 'Training Protocols',
                 whyTitle: 'Master the Art of <br/><span class="font-bold text-teal-400">Normal Breathing</span>',
@@ -428,7 +442,7 @@
                 totalBreaths: '总呼吸次数',
                 copyright: '© 2026 ButeykoFlow 呼吸方案',
                 diag: '诊断',
-                cp: '闭气练习 (CP)',
+                cp: '闭气 (CP)',
                 protocol: '步骤',
                 protocolSteps: [
                     '通过鼻子自然呼气。',
@@ -753,7 +767,59 @@
             }
 
             updatePacerUI(t);
+            updateClockUI();
             document.getElementById('session-timer').textContent = formatTime(state.sessionTimer.seconds);
+        }
+
+        function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+            var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+            return {
+                x: centerX + (radius * Math.cos(angleInRadians)),
+                y: centerY + (radius * Math.sin(angleInRadians))
+            };
+        }
+
+        function describeArc(x, y, radius, startAngle, endAngle) {
+            const end = endAngle >= 360 ? 359.99 : endAngle;
+            const start = polarToCartesian(x, y, radius, startAngle);
+            const endP = polarToCartesian(x, y, radius, end);
+            const largeArcFlag = end - startAngle <= 180 ? "0" : "1";
+            const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 1, endP.x, endP.y].join(" ");
+            return d;
+        }
+
+        function updateClockUI() {
+            const s = state.activeSession;
+            const p = s.pattern;
+            const h = p.pauseAfterInhale || 0;
+            const pa = p.pauseAfterExhale || 0;
+            const total = p.inhale + h + p.exhale + pa || 1;
+            
+            const inhaleAngle = (p.inhale / total) * 360;
+            const holdAngle = (h / total) * 360;
+            const exhaleAngle = (p.exhale / total) * 360;
+            
+            document.getElementById('arc-inhale').setAttribute('d', describeArc(50, 50, 48, 0, inhaleAngle));
+            document.getElementById('arc-exhale').setAttribute('d', describeArc(50, 50, 48, inhaleAngle + holdAngle, inhaleAngle + holdAngle + exhaleAngle));
+            document.getElementById('arc-pause').setAttribute('d', describeArc(50, 50, 48, inhaleAngle + holdAngle + exhaleAngle, 360));
+
+            // Needle rotation
+            let elapsed = 0;
+            const phaseTime = state.sessionTimer.phaseTime;
+            const phase = state.sessionTimer.phase;
+            
+            if (phase === 'Inhale') {
+                elapsed = p.inhale - phaseTime;
+            } else if (phase === 'Hold (Full)') {
+                elapsed = p.inhale + (h - phaseTime);
+            } else if (phase === 'Exhale') {
+                elapsed = p.inhale + h + (p.exhale - phaseTime);
+            } else if (phase === 'Pause (Empty)') {
+                elapsed = p.inhale + h + p.exhale + (pa - phaseTime);
+            }
+            
+            const rotation = (elapsed / total) * 360;
+            document.getElementById('pacer-orbit-group').style.transform = `rotate(${rotation}deg)`;
         }
 
         function transitionPhase(t) {

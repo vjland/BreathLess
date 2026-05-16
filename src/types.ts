@@ -27,9 +27,9 @@ export interface Session {
 
 export const SESSION_LIMITS = {
   MIN_BREATH: 1,
-  MAX_BREATH: 20,
+  MAX_BREATH: 10,
   MIN_DURATION: 1,
-  MAX_DURATION: 60,
+  MAX_DURATION: 10,
 };
 
 export const SESSIONS: Session[] = [
@@ -80,7 +80,7 @@ export const SESSIONS: Session[] = [
     title: 'The Foundation',
     description: 'The standard Buteyko reduced breathing method for daily maintenance.',
     goal: SessionGoal.GENERAL,
-    durationMinutes: 15,
+    durationMinutes: 10,
     pattern: {
       inhale: 4,
       pauseAfterInhale: 0,

@@ -7,7 +7,7 @@ export type Language = 'en' | 'zh';
 
 export const translations = {
   en: {
-    appName: 'BreatheFlow',
+    appName: 'Breathe less',
     appTagline: 'Total Control Protocol',
     measureCP: 'Measure CP',
     trainingProtocols: 'Training Protocols',
@@ -79,7 +79,7 @@ export const translations = {
     }
   },
   zh: {
-    appName: '呼吸流',
+    appName: 'Breathe less',
     appTagline: '全面控制方案',
     measureCP: '测量闭气 (CP)',
     trainingProtocols: '训练方案',
@@ -105,7 +105,7 @@ export const translations = {
     advancedTransition: '进阶级',
     eliteHomeostasis: '精英级',
     diagnostics: '诊断',
-    controlPause: '闭气练习 (CP)',
+    controlPause: '闭气 (CP)',
     protocol: '步骤',
     protocolSteps: [
       '通过鼻子自然呼气。',
