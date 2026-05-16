@@ -339,27 +339,32 @@
                 <!-- Pacer -->
                 <div class="flex flex-col items-center justify-center space-y-12 h-80">
                     <div class="relative flex items-center justify-center w-[320px] h-[320px]">
-                        <!-- Clock SVG -->
-                        <svg id="pacer-clock" class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100">
-                           <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5" />
-                           <path id="arc-inhale" d="" fill="none" stroke="rgba(20,184,166,0.3)" stroke-width="2" />
-                           <path id="arc-exhale" d="" fill="none" stroke="rgba(99,102,241,0.2)" stroke-width="2" />
-                           <path id="arc-pause" d="" fill="none" stroke="rgba(239, 68, 68, 0.2)" stroke-width="2" />
-                           <g id="pacer-orbit-group" style="transform-origin: 50% 50%; transition: transform 1.05s linear;">
-                             <!-- Invisible spacer to center the group origin -->
-                             <circle cx="50" cy="50" r="48" fill="transparent"></circle>
-                             <circle id="pacer-dot" cx="50" cy="2" r="3" fill="white" style="filter: drop-shadow(0 0 8px rgba(255,255,255,0.8));" />
-                             <circle id="pacer-dot-pulse" cx="50" cy="2" r="5" fill="rgba(255,255,255,0.2)" class="animate-pulse" />
-                           </g>
+                        <!-- Breathing Triangle SVG -->
+                        <svg class="absolute w-full h-full inset-0 pointer-events-none overflow-visible z-20" viewBox="0 0 100 100">
+                          <defs>
+                            <radialGradient id="dotGlow" cx="50%" cy="50%" r="50%">
+                              <stop offset="0%" stop-color="white" stop-opacity="1" />
+                              <stop offset="100%" stop-color="#2dd4bf" stop-opacity="0" />
+                            </radialGradient>
+                          </defs>
+
+                          <!-- Background Triangle -->
+                          <polygon points="8.43,74 50,2 91.57,74" fill="none" class="stroke-white/5" stroke-width="0.5" stroke-linejoin="round" />
+                          
+                          <!-- Phase Segments -->
+                          <line x1="8.43" y1="74" x2="50" y2="2" class="stroke-teal-500/40" stroke-width="2.5" stroke-linecap="round" />
+                          <line x1="50" y1="2" x2="91.57" y2="74" class="stroke-indigo-500/30" stroke-width="2" stroke-linecap="round" />
+                          <line id="line-pause" x1="91.57" y1="74" x2="8.43" y2="74" class="stroke-white/10" stroke-width="1.5" stroke-linecap="round" />
+
+                          <!-- Orbiting Dot -->
+                          <circle id="pacer-dot" cx="8.43" cy="74" r="3.5" fill="url(#dotGlow)" class="drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-1000 ease-linear" />
+                          <circle id="pacer-dot-pulse" cx="8.43" cy="74" r="6" class="fill-teal-400/20 animate-pulse transition-all duration-1000 ease-linear" />
                         </svg>
 
-                        <div class="absolute inset-4 border-[1px] border-white/5 rounded-full"></div>
-                        <div id="pacer-ring" class="absolute inset-10 border-[1px] border-white/10 rounded-full opacity-50 transition-all duration-1000"></div>
-                        
-                        <div id="pacer-core" class="w-48 h-48 rounded-full bg-gradient-to-b from-teal-500/10 to-transparent flex flex-col items-center justify-center backdrop-blur-xl border border-teal-500/20 shadow-[0_0_80px_rgba(20,184,166,0.15)] z-10 transition-all duration-1000">
-                            <span id="pacer-phase-label" class="text-[10px] uppercase tracking-[0.3em] text-teal-400 font-bold mb-1 opacity-80">Expansion</span>
-                            <span id="pacer-count" class="text-7xl font-thin tracking-tighter text-white timer-val">0</span>
-                            <span id="pacer-unit" class="text-[10px] uppercase tracking-widest text-slate-500 mt-1">SECONDS</span>
+                        <div id="pacer-core" class="w-28 h-28 rounded-full bg-gradient-to-b from-teal-500/10 to-transparent flex flex-col items-center justify-center backdrop-blur-xl border border-teal-500/20 shadow-[0_0_40px_rgba(20,184,166,0.15)] z-10 transition-all duration-1000">
+                            <span id="pacer-phase-label" class="text-[8px] uppercase tracking-[0.3em] text-teal-400 font-bold mb-1 opacity-80">Expansion</span>
+                            <span id="pacer-count" class="text-4xl font-thin tracking-tighter text-white timer-val">0</span>
+                            <span id="pacer-unit" class="text-[8px] uppercase tracking-widest text-slate-500 mt-1">SECONDS</span>
                         </div>
 
                         <div class="absolute top-0 flex flex-col items-center">
@@ -944,55 +949,68 @@
             document.getElementById('session-timer').textContent = formatTime(state.sessionTimer.seconds);
         }
 
-        function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
-            var angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
-            return {
-                x: centerX + (radius * Math.cos(angleInRadians)),
-                y: centerY + (radius * Math.sin(angleInRadians))
-            };
-        }
+        function computeTrianglePosition(s) {
+            const V0 = { x: 8.43, y: 74 };
+            const V1 = { x: 50, y: 2 };
+            const V2 = { x: 91.57, y: 74 };
 
-        function describeArc(x, y, radius, startAngle, endAngle) {
-            const end = endAngle >= 360 ? 359.99 : endAngle;
-            const start = polarToCartesian(x, y, radius, startAngle);
-            const endP = polarToCartesian(x, y, radius, end);
-            const largeArcFlag = end - startAngle <= 180 ? "0" : "1";
-            const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 1, endP.x, endP.y].join(" ");
-            return d;
+            const modS = ((s % 3) + 3) % 3;
+            if (modS <= 1) {
+                const pInner = modS;
+                return { x: V0.x + (V1.x - V0.x) * pInner, y: V0.y + (V1.y - V0.y) * pInner };
+            } else if (modS <= 2) {
+                const pInner = modS - 1;
+                return { x: V1.x + (V2.x - V1.x) * pInner, y: V1.y + (V2.y - V1.y) * pInner };
+            } else {
+                const pInner = modS - 2;
+                return { x: V2.x + (V0.x - V2.x) * pInner, y: V2.y + (V0.y - V2.y) * pInner };
+            }
         }
 
         function updateClockUI() {
             const s = state.activeSession;
             const p = s.pattern;
-            const h = p.pauseAfterInhale || 0;
             const pa = p.pauseAfterExhale || 0;
-            const total = p.inhale + h + p.exhale + pa || 1;
             
-            const inhaleAngle = (p.inhale / total) * 360;
-            const holdAngle = (h / total) * 360;
-            const exhaleAngle = (p.exhale / total) * 360;
-            
-            document.getElementById('arc-inhale').setAttribute('d', describeArc(50, 50, 48, 0, inhaleAngle));
-            document.getElementById('arc-exhale').setAttribute('d', describeArc(50, 50, 48, inhaleAngle + holdAngle, inhaleAngle + holdAngle + exhaleAngle));
-            document.getElementById('arc-pause').setAttribute('d', describeArc(50, 50, 48, inhaleAngle + holdAngle + exhaleAngle, 360));
+            const linePause = document.getElementById('line-pause');
+            if (pa > 0) {
+                linePause.className.baseVal = "stroke-red-500/20";
+                linePause.setAttribute("stroke-width", "2.5");
+            } else {
+                linePause.className.baseVal = "stroke-white/10";
+                linePause.setAttribute("stroke-width", "1.5");
+            }
 
-            // Needle rotation
-            let elapsed = 0;
-            const phaseTime = state.sessionTimer.phaseTime;
+            if (!state.sessionTimer.isRunning) {
+                const V0 = { x: 8.43, y: 74 };
+                document.getElementById('pacer-dot').setAttribute('cx', V0.x);
+                document.getElementById('pacer-dot').setAttribute('cy', V0.y);
+                document.getElementById('pacer-dot-pulse').setAttribute('cx', V0.x);
+                document.getElementById('pacer-dot-pulse').setAttribute('cy', V0.y);
+                return;
+            }
+
             const phase = state.sessionTimer.phase;
+            const timeRemaining = state.sessionTimer.phaseTime;
             
+            let base = 0;
             if (phase === 'Inhale') {
-                elapsed = p.inhale - phaseTime;
+                base = 1 - ((timeRemaining - 1) / (p.inhale || 1));
             } else if (phase === 'Hold (Full)') {
-                elapsed = p.inhale + (h - phaseTime);
+                base = 1;
             } else if (phase === 'Exhale') {
-                elapsed = p.inhale + h + (p.exhale - phaseTime);
+                base = 1 + (1 - ((timeRemaining - 1) / (p.exhale || 1)));
             } else if (phase === 'Pause (Empty)') {
-                elapsed = p.inhale + h + p.exhale + (pa - phaseTime);
+                base = 2 + (1 - ((timeRemaining - 1) / (pa || 1)));
             }
             
-            const rotation = (elapsed / total) * 360;
-            document.getElementById('pacer-orbit-group').style.transform = `rotate(${rotation}deg)`;
+            const targetS = state.sessionTimer.cycles * 3 + base;
+            const pos = computeTrianglePosition(targetS);
+            
+            document.getElementById('pacer-dot').setAttribute('cx', pos.x);
+            document.getElementById('pacer-dot').setAttribute('cy', pos.y);
+            document.getElementById('pacer-dot-pulse').setAttribute('cx', pos.x);
+            document.getElementById('pacer-dot-pulse').setAttribute('cy', pos.y);
         }
 
         function transitionPhase(t) {
