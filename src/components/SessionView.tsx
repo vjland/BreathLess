@@ -49,7 +49,7 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
 
   return (
     <div className="min-h-[85vh] flex flex-col pt-8 pb-12 px-6 overflow-y-auto">
-      <div className="flex justify-between items-center mb-12">
+      <div className="flex gap-8 items-center justify-center mb-6 max-w-2xl mx-auto w-full">
         <button 
           onClick={onBack}
           className="flex items-center text-slate-500 hover:text-teal-400 transition-colors group text-xs tracking-widest uppercase font-bold"
@@ -75,7 +75,7 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden mb-12 bg-white/[0.02] border border-white/5 rounded-[32px] p-8"
+            className="overflow-hidden mb-12 bg-white/[0.02] border border-white/5 rounded-[32px] p-8 max-w-2xl mx-auto w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
@@ -186,7 +186,16 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
           lang={lang}
         />
 
-        <div className="mt-16 flex flex-col items-center space-y-6">
+        <div className="w-64 h-[2px] bg-white/10 rounded-full mt-4 overflow-hidden">
+          <motion.div 
+            className="h-full bg-teal-500/50"
+            initial={{ width: '100%' }}
+            animate={{ width: `${(timeLeft / (session.durationMinutes * 60)) * 100}%` }}
+            transition={{ ease: "linear", duration: 1 }}
+          />
+        </div>
+
+        <div className="mt-12 flex flex-col items-center space-y-6">
           <button
             onClick={() => setIsRunning(!isRunning)}
             className={`px-14 py-4 rounded-full text-sm font-black uppercase tracking-[0.3em] transition-all duration-500 transform active:scale-95 ${
@@ -197,10 +206,6 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
           >
             {isRunning ? t.pause : t.commence}
           </button>
-
-          <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-            {t.cyclesCompleted}: <span className="text-teal-400">{cycles}</span>
-          </p>
 
           <button
             onClick={() => {

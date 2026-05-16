@@ -6,6 +6,7 @@
     <title>Breathe less</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     <style>
         body {
@@ -15,6 +16,20 @@
             margin: 0;
             overflow-x: hidden;
             min-height: 100vh;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .atmosphere-bg {
@@ -176,46 +191,77 @@
 
     <template id="tpl-cp-test">
         <div class="flex flex-col items-center py-12 fade-in">
-            <div class="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden">
-                <div class="flex justify-between items-start mb-8 relative z-10">
+            <div class="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-6 sm:p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden flex flex-col min-h-[500px]">
+                <div class="flex justify-between items-start mb-6 relative z-10 w-full">
                     <div>
                         <h2 id="diag-label" class="text-xs font-black text-teal-400 uppercase tracking-[0.3em]">Diagnostics</h2>
-                        <h3 id="cp-label" class="text-2xl font-light text-slate-100 mt-1">Control Pause</h3>
+                        <h3 id="cp-label" class="text-xl sm:text-2xl font-light text-slate-100 mt-1">Control Pause</h3>
                     </div>
-                    <button id="cp-info-toggle" class="p-2 text-slate-600 hover:text-teal-400 transition-colors">
-                        <i data-lucide="info" class="w-4.5 h-4.5"></i>
-                    </button>
+                    <div class="flex bg-white/5 rounded-full p-1 border border-white/5">
+                        <button id="tab-timer" class="px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest transition-colors bg-teal-500 text-[#05070a]">Control Pause</button>
+                        <button id="tab-history" class="px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest transition-colors text-slate-400 hover:text-slate-200">History</button>
+                    </div>
                 </div>
 
-                <div id="cp-info-box" class="hidden overflow-hidden mb-8 bg-teal-500/5 rounded-2xl p-5 text-[10px] text-teal-200/60 leading-loose tracking-wide border border-teal-500/10">
-                    <strong id="protocol-label" class="text-teal-400 uppercase font-black tracking-widest block mb-2">Protocol</strong>
-                    <ol id="protocol-steps" class="list-decimal list-inside space-y-2">
-                        <!-- Steps injected here -->
-                    </ol>
-                </div>
-
-                <div class="flex flex-col items-center py-4 relative z-10">
-                    <div id="cp-timer-display" class="text-9xl font-thin timer-val text-white tracking-tighter mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                        0
-                    </div>
-
-                    <div class="flex space-x-6">
-                        <button id="cp-start-stop" class="w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-teal-500 text-[#05070a] shadow-[0_0_50px_rgba(20,184,166,0.3)]">
-                            <i data-lucide="play" class="fill-current w-7 h-7 ml-1"></i>
-                        </button>
-                        <button id="cp-reset" class="w-20 h-20 rounded-full bg-white/5 border border-white/5 text-slate-500 hover:text-slate-300 flex items-center justify-center transition-all">
-                            <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                <div id="view-timer" class="flex-1 flex flex-col relative z-10">
+                    <div class="flex justify-end mb-4">
+                        <button id="cp-info-toggle" class="p-2 text-slate-600 hover:text-teal-400 transition-colors">
+                            <i data-lucide="info" class="w-4.5 h-4.5"></i>
                         </button>
                     </div>
-                </div>
 
-                <div id="cp-result-box" class="hidden mt-10 p-5 bg-teal-500/5 border border-teal-500/10 rounded-3xl flex items-center space-x-4">
-                    <i data-lucide="check-circle-2" class="text-teal-400 w-6 h-6"></i>
-                    <div>
-                        <p id="assess-label" class="text-xs font-black text-teal-400 uppercase tracking-widest">Assessment: 0s</p>
-                        <p id="assess-desc" class="text-[10px] text-slate-500 mt-1 uppercase tracking-tight">Foundation</p>
+                    <div id="cp-info-box" class="hidden overflow-hidden mb-8 bg-teal-500/5 rounded-2xl p-5 text-[10px] text-teal-200/60 leading-loose tracking-wide border border-teal-500/10">
+                        <strong id="protocol-label" class="text-teal-400 uppercase font-black tracking-widest block mb-2">Protocol</strong>
+                        <ol id="protocol-steps" class="list-decimal list-inside space-y-2"></ol>
+                    </div>
+
+                    <div class="flex flex-col items-center flex-1 justify-center py-4">
+                        <div id="cp-timer-display" class="text-8xl sm:text-9xl font-thin timer-val text-white tracking-tighter mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">0</div>
+                        <div class="flex space-x-6">
+                            <button id="cp-start-stop" class="w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-teal-500 text-[#05070a] shadow-[0_0_50px_rgba(20,184,166,0.3)]">
+                                <i data-lucide="play" class="fill-current w-7 h-7 ml-1"></i>
+                            </button>
+                            <button id="cp-reset" class="w-20 h-20 rounded-full bg-white/5 border border-white/5 text-slate-500 hover:text-slate-300 flex items-center justify-center transition-all">
+                                <i data-lucide="rotate-ccw" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="cp-result-box" class="hidden mt-6 p-5 bg-teal-500/5 border border-teal-500/10 rounded-3xl flex items-center space-x-4">
+                        <i data-lucide="check-circle-2" class="text-teal-400 w-6 h-6"></i>
+                        <div>
+                            <p id="assess-label" class="text-xs font-black text-teal-400 uppercase tracking-widest">Assessment: 0s</p>
+                            <p id="assess-desc" class="text-[10px] text-slate-500 mt-1 uppercase tracking-tight">Foundation</p>
+                        </div>
                     </div>
                 </div>
+
+                <div id="view-history" class="hidden flex-1 flex flex-col relative z-10">
+                    <div id="history-empty" class="hidden flex-1 flex flex-col items-center justify-center text-slate-500">
+                        <i data-lucide="trending-up" class="w-12 h-12 mb-4 opacity-20"></i>
+                        <p class="text-sm font-medium">No records yet.</p>
+                    </div>
+
+                    <div id="history-content" class="flex flex-col h-full space-y-8">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2 text-teal-400">
+                                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                                <span id="highest-cp-label" class="text-[10px] font-black uppercase tracking-widest">Highest CP</span>
+                            </div>
+                            <span id="highest-cp-val" class="text-2xl font-light text-white">0s</span>
+                        </div>
+
+                        <div id="chart-container" class="h-48 w-full bg-white/[0.02] border border-white/5 rounded-3xl p-4 hidden">
+                            <canvas id="cp-chart"></canvas>
+                        </div>
+
+                        <div class="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar max-h-64">
+                            <p id="past-records-label" class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Past Records</p>
+                            <div id="records-list" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-teal-500/5 blur-3xl rounded-full"></div>
             </div>
             <button id="cp-back" class="mt-8 text-slate-500 hover:text-slate-300 underline text-xs tracking-widest uppercase">Return to Sessions</button>
@@ -224,13 +270,13 @@
 
     <template id="tpl-session">
         <div class="min-h-[85vh] flex flex-col pt-8 pb-12 fade-in">
-            <div class="flex justify-between items-center mb-12">
+            <div class="flex gap-8 items-center justify-center mb-6 max-w-2xl mx-auto w-full">
                 <button id="session-back" class="flex items-center text-slate-500 hover:text-teal-400 transition-colors group text-xs tracking-widest uppercase font-bold">
                     <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
                     <span id="session-back-text">Return to Protocol</span>
                 </button>
 
-                <button id="settings-toggle" class="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all text-[10px] uppercase tracking-widest font-bold bg-white/5 text-slate-400 hover:text-slate-100">
+                <button id="settings-toggle" class="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all text-xs uppercase tracking-widest font-bold bg-white/5 text-slate-400 hover:text-slate-100 border border-transparent hover:border-white/10">
                     <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
                     <span id="settings-btn-text">Custom Setup</span>
                 </button>
@@ -317,12 +363,12 @@
                         </div>
 
                         <div class="absolute top-0 flex flex-col items-center">
-                            <div id="inhale-indicator" class="w-px h-6 bg-gradient-to-b from-teal-400 to-transparent transition-all opacity-20"></div>
-                            <span id="inhale-text" class="text-[8px] uppercase tracking-[0.3em] font-bold mt-2 text-slate-600">Inhale</span>
+                            <div id="inhale-indicator" class="w-px h-6 bg-gradient-to-b from-teal-400 to-transparent transition-all duration-500 opacity-20"></div>
+                            <span id="inhale-text" class="text-[8px] uppercase tracking-[0.3em] font-bold mt-2 text-slate-600 transition-colors duration-500">Inhale</span>
                         </div>
                         <div class="absolute bottom-0 flex flex-col items-center">
-                            <span id="exhale-text" class="text-[8px] uppercase tracking-[0.3em] font-bold mb-2 text-slate-600">Exhale</span>
-                            <div id="exhale-indicator" class="w-px h-6 bg-gradient-to-t from-white/20 to-transparent transition-all opacity-20"></div>
+                            <span id="exhale-text" class="text-[8px] uppercase tracking-[0.3em] font-bold mb-2 text-slate-600 transition-colors duration-500">Exhale</span>
+                            <div id="exhale-indicator" class="w-px h-6 bg-gradient-to-t from-white/20 to-transparent transition-all duration-500 opacity-20"></div>
                         </div>
                     </div>
                     <div class="text-center">
@@ -419,6 +465,9 @@
                 backToProtocol: 'Return to Protocol',
                 customSetup: 'Custom Setup',
                 closeSetup: 'Close Setup',
+                pastRecords: 'Past Records',
+                highestCP: 'Highest CP',
+                history: 'History',
                 labels: { inhale: 'Inhale', exhale: 'Exhale', pause: 'Post-Exhale Pause', duration: 'Session Duration' },
                 resetDefaults: 'Reset to Protocol Defaults',
                 guideLabel: 'Protocol Guide',
@@ -456,6 +505,9 @@
                 backToProtocol: '返回方案',
                 customSetup: '自定义设置',
                 closeSetup: '关闭设置',
+                pastRecords: '历史记录',
+                highestCP: '最高 CP',
+                history: '历史记录',
                 labels: { inhale: '吸气', exhale: '呼气', pause: '呼气后暂停', duration: '练习时长' },
                 resetDefaults: '重置为默认设置',
                 guideLabel: '方案指南',
@@ -475,6 +527,7 @@
             lang: localStorage.getItem('breathflow_lang') || 'en',
             sessions: JSON.parse(localStorage.getItem('breathflow_sessions')) || DEFAULT_SESSIONS,
             lastCP: localStorage.getItem('breathflow_lastcp') || null,
+            records: JSON.parse(localStorage.getItem('breathflow_cp_records')) || [],
             activeView: 'dashboard',
             activeSession: null,
             cpTimer: { seconds: 0, interval: null, isRunning: false },
@@ -488,6 +541,7 @@
             localStorage.setItem('breathflow_lang', state.lang);
             localStorage.setItem('breathflow_sessions', JSON.stringify(state.sessions));
             if (state.lastCP) localStorage.setItem('breathflow_lastcp', state.lastCP);
+            localStorage.setItem('breathflow_cp_records', JSON.stringify(state.records));
         }
 
         function formatTime(s) {
@@ -577,6 +631,10 @@
             document.getElementById('protocol-label').textContent = t.protocol;
             document.getElementById('cp-timer-display').textContent = state.cpTimer.seconds;
             document.getElementById('cp-back').textContent = t.backToSessions;
+            document.getElementById('tab-timer').textContent = t.cp;
+            document.getElementById('tab-history').textContent = t.history;
+            document.getElementById('past-records-label').textContent = t.pastRecords;
+            document.getElementById('highest-cp-label').textContent = t.highestCP;
             
             const stepsList = document.getElementById('protocol-steps');
             t.protocolSteps.forEach(step => {
@@ -584,6 +642,27 @@
                 li.textContent = step;
                 stepsList.appendChild(li);
             });
+
+            // Tabs Logic
+            const viewTimer = document.getElementById('view-timer');
+            const viewHistory = document.getElementById('view-history');
+            const tabTimer = document.getElementById('tab-timer');
+            const tabHistory = document.getElementById('tab-history');
+
+            tabTimer.onclick = () => {
+                viewTimer.classList.remove('hidden');
+                viewHistory.classList.add('hidden');
+                tabTimer.className = 'px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest transition-colors bg-teal-500 text-[#05070a]';
+                tabHistory.className = 'px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest transition-colors text-slate-400 hover:text-slate-200';
+            };
+
+            tabHistory.onclick = () => {
+                viewHistory.classList.remove('hidden');
+                viewTimer.classList.add('hidden');
+                tabHistory.className = 'px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest transition-colors bg-teal-500 text-[#05070a]';
+                tabTimer.className = 'px-3 py-1.5 rounded-full text-[10px] uppercase font-bold tracking-widest transition-colors text-slate-400 hover:text-slate-200';
+                renderHistoryTab();
+            };
 
             const startBtn = document.getElementById('cp-start-stop');
             const startIcon = startBtn.querySelector('i');
@@ -595,6 +674,10 @@
                 startBtn.className = "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-teal-500 text-[#05070a] shadow-[0_0_50px_rgba(20,184,166,0.3)]";
                 startIcon.setAttribute('data-lucide', 'play');
                 startIcon.className = "fill-current w-7 h-7 ml-1";
+            }
+
+            if (state.lastCP && !state.cpTimer.isRunning) {
+                showCPResult(t);
             }
 
             document.getElementById('cp-info-toggle').onclick = () => {
@@ -623,6 +706,15 @@
                     clearInterval(state.cpTimer.interval);
                     state.cpTimer.isRunning = false;
                     state.lastCP = state.cpTimer.seconds;
+                    
+                    const score = Math.max(1, state.cpTimer.seconds);
+                    const newRecord = {
+                        id: Math.random().toString(36).substring(2, 9),
+                        score,
+                        date: new Date().toLocaleDateString(state.lang === 'zh' ? 'zh-CN' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                    };
+                    state.records = [newRecord, ...state.records];
+                    
                     saveState();
                     showCPResult(t);
                     render();
@@ -636,6 +728,87 @@
                     render();
                 }
             };
+        }
+
+        let cpChartInstance = null;
+
+        function renderHistoryTab() {
+            if (state.records.length === 0) {
+                document.getElementById('history-empty').classList.remove('hidden');
+                document.getElementById('history-content').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('history-empty').classList.add('hidden');
+            document.getElementById('history-content').classList.remove('hidden');
+
+            const highestCP = Math.max(...state.records.map(r => r.score));
+            document.getElementById('highest-cp-val').textContent = highestCP + 's';
+
+            const listContainer = document.getElementById('records-list');
+            listContainer.innerHTML = '';
+            state.records.forEach(r => {
+                const div = document.createElement('div');
+                div.className = "flex justify-between items-center bg-white/[0.02] p-4 rounded-2xl border border-white/5";
+                div.innerHTML = `
+                    <span class="text-xs text-slate-400">${r.date}</span>
+                    <span class="text-base font-medium text-slate-200">${r.score}s</span>
+                `;
+                listContainer.appendChild(div);
+            });
+
+            if (state.records.length > 1) {
+                document.getElementById('chart-container').classList.remove('hidden');
+                const chartData = [...state.records].reverse();
+                const labels = chartData.map(r => r.date);
+                const dataPoints = chartData.map(r => r.score);
+
+                const ctx = document.getElementById('cp-chart').getContext('2d');
+                if (cpChartInstance) {
+                    cpChartInstance.destroy();
+                }
+                
+                cpChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'CP Score',
+                            data: dataPoints,
+                            borderColor: '#2dd4bf',
+                            backgroundColor: '#2dd4bf',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#05070a',
+                            pointBorderColor: '#2dd4bf',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#05070a',
+                                borderColor: 'rgba(20,184,166,0.2)',
+                                borderWidth: 1,
+                                titleColor: '#94a3b8',
+                                bodyColor: '#2dd4bf',
+                                displayColors: false
+                            }
+                        },
+                        scales: {
+                            x: { display: false },
+                            y: { display: false, beginAtZero: true }
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('chart-container').classList.add('hidden');
+            }
         }
 
         function showCPResult(t) {
@@ -872,9 +1045,12 @@
             core.style.opacity = ui.opacity;
             
             inhaleInd.style.opacity = state.sessionTimer.phase === 'Inhale' ? '1' : '0.2';
-            inhaleInd.style.height = state.sessionTimer.phase === 'Inhale' ? '3rem' : '1.5rem';
+            inhaleInd.style.height = state.sessionTimer.phase === 'Inhale' ? '4.75rem' : '2.375rem';
+            document.getElementById('inhale-text').className = `text-[8px] uppercase tracking-[0.3em] font-bold mt-2 transition-colors duration-500 ${state.sessionTimer.phase === 'Inhale' ? 'text-teal-400' : 'text-slate-600'}`;
+
             exhaleInd.style.opacity = state.sessionTimer.phase === 'Exhale' ? '1' : '0.2';
-            exhaleInd.style.height = state.sessionTimer.phase === 'Exhale' ? '3rem' : '1.5rem';
+            exhaleInd.style.height = state.sessionTimer.phase === 'Exhale' ? '4.75rem' : '2.375rem';
+            document.getElementById('exhale-text').className = `text-[8px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors duration-500 ${state.sessionTimer.phase === 'Exhale' ? 'text-teal-400' : 'text-slate-600'}`;
             
             if (ring) {
                 ring.style.opacity = state.sessionTimer.isRunning ? '1' : '0.5';

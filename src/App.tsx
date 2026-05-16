@@ -124,7 +124,6 @@ export default function App() {
                 lang={lang}
                 onComplete={(val) => {
                   handleCPUpdate(val);
-                  setTimeout(() => setShowCPTest(false), 2000);
                 }} 
               />
               <button 

@@ -43,6 +43,8 @@ export const translations = {
     ],
     assessment: 'Assessment',
     returnToSessions: 'Return to Sessions',
+    pastRecords: 'Past Records',
+    highestCP: 'Highest CP',
     intensity: {
       Light: 'Light',
       Moderate: 'Moderate',
@@ -115,6 +117,8 @@ export const translations = {
     ],
     assessment: '评估结果',
     returnToSessions: '返回主界面',
+    pastRecords: '历史记录',
+    highestCP: '最高 CP',
     intensity: {
       Light: '轻度',
       Moderate: '中度',
