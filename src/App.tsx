@@ -62,8 +62,8 @@ export default function App() {
         <div className="blob blob-3" />
       </div>
       
-      <main className="container mx-auto px-10 py-8 max-w-6xl relative z-10">
-        <header className="flex justify-between items-center mb-16">
+      <main className="container mx-auto px-6 sm:px-10 py-4 max-w-6xl relative z-10">
+        <header className="flex justify-between items-center mb-8">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-teal-400 to-blue-500 flex items-center justify-center">
               <div className="w-4 h-4 bg-white rounded-full opacity-40 animate-pulse" />
@@ -118,7 +118,7 @@ export default function App() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="flex flex-col items-center py-12"
+              className="flex flex-col items-center py-4"
             >
               <ControlPauseTimer 
                 lang={lang}
@@ -139,10 +139,10 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid gap-16"
+              className="grid gap-8"
             >
               <section>
-                <div className="flex items-center justify-between mb-10">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xs uppercase tracking-[0.4em] font-black text-teal-400/60">{t.trainingProtocols}</h2>
                   <div className="h-px w-24 bg-white/10 ml-6" />
                 </div>
@@ -191,9 +191,9 @@ export default function App() {
                 </div>
               </section>
 
-              <section className="relative p-12 rounded-[40px] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
-                <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                  <div className="flex-1 space-y-6">
+              <section className="relative p-6 sm:p-12 rounded-[40px] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+                <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                  <div className="flex-1 space-y-4 sm:space-y-6">
                     <h3 className="text-3xl font-light tracking-tight text-white leading-tight">
                       {lang === 'zh' ? '开启' : 'Master the Art of'} <span className="font-bold text-teal-400">{t.whyBreatheLess.split(' ').slice(-2).join(' ')}</span>
                     </h3>
@@ -219,7 +219,7 @@ export default function App() {
           )}
         </AnimatePresence>
 
-        <footer className="mt-24 pb-12 text-center">
+        <footer className="mt-12 pb-6 text-center">
           <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">
             {t.copyright}
           </p>

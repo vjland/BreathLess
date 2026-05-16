@@ -48,8 +48,8 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
   };
 
   return (
-    <div className="min-h-[85vh] flex flex-col pt-8 pb-12 px-6 overflow-y-auto">
-      <div className="flex gap-8 items-center justify-center mb-6 max-w-2xl mx-auto w-full">
+    <div className="min-h-screen flex flex-col pt-4 pb-8 px-6 overflow-y-auto">
+      <div className="flex gap-4 items-center justify-center mb-4 max-w-2xl mx-auto w-full">
         <button 
           onClick={onBack}
           className="flex items-center text-slate-500 hover:text-teal-400 transition-colors group text-xs tracking-widest uppercase font-bold"
@@ -75,7 +75,7 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden mb-12 bg-white/[0.02] border border-white/5 rounded-[32px] p-8 max-w-2xl mx-auto w-full"
+            className="overflow-hidden mb-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-6 max-w-2xl mx-auto w-full"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-6">
@@ -154,11 +154,11 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
       </AnimatePresence>
 
       <div className="flex-1 flex flex-col items-center max-w-2xl mx-auto w-full">
-        <div className="text-center mb-12">
+        <div className="text-center mb-6">
           <motion.h2 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-light text-slate-100 mb-4 tracking-tight"
+            className="text-3xl sm:text-4xl font-light text-slate-100 mb-2 tracking-tight"
           >
             {sessionT.title}
           </motion.h2>
@@ -195,7 +195,7 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
           />
         </div>
 
-        <div className="mt-12 flex flex-col items-center space-y-6">
+        <div className="mt-8 flex flex-col items-center space-y-4">
           <button
             onClick={() => setIsRunning(!isRunning)}
             className={`px-14 py-4 rounded-full text-sm font-black uppercase tracking-[0.3em] transition-all duration-500 transform active:scale-95 ${
@@ -220,7 +220,7 @@ export default function SessionView({ session, onBack, onUpdate, lang }: Session
           </button>
         </div>
 
-        <div className="mt-16 p-8 bg-white/[0.03] rounded-[32px] border border-white/5 max-w-lg w-full">
+        <div className="mt-10 p-6 bg-white/[0.03] rounded-[32px] border border-white/5 max-w-lg w-full">
           <h4 className="font-bold text-teal-400 mb-3 text-[10px] uppercase tracking-[0.3em]">{t.protocolGuide}</h4>
           <p className="text-slate-400 text-sm leading-relaxed font-light">
             {sessionT.description} {lang === 'zh' ? '保持高度放松。仅用鼻子。目标是产生明显但可接受的减量感。' : 'Maintain high-level relaxation. Nasal only. Aim for a distinct but tolerable sense of air reduction.'}

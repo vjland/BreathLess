@@ -110,9 +110,9 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <div id="app" class="container mx-auto px-10 py-8 max-w-6xl relative z-10 min-h-screen flex flex-col">
+    <div id="app" class="container mx-auto px-6 sm:px-10 py-4 max-w-6xl relative z-10 min-h-screen flex flex-col">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-16">
+        <header class="flex justify-between items-center mb-8">
             <div class="flex items-center space-x-3">
                 <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-teal-400 to-blue-500 flex items-center justify-center">
                     <div class="w-4 h-4 bg-white rounded-full opacity-40 animate-pulse"></div>
@@ -144,7 +144,7 @@
         </div>
 
         <!-- Footer -->
-        <footer class="mt-24 pb-12 text-center">
+        <footer class="mt-12 pb-6 text-center">
             <p id="copyright-text" class="text-[10px] font-black text-slate-600 uppercase tracking-[0.5em]">
                 © 2026 ButeykoFlow Protocol
             </p>
@@ -154,9 +154,9 @@
 
     <!-- Templates -->
     <template id="tpl-dashboard">
-        <div class="grid gap-16 fade-in">
+        <div class="grid gap-8 fade-in">
             <section>
-                <div class="flex items-center justify-between mb-10">
+                <div class="flex items-center justify-between mb-6">
                     <h2 id="training-protocols-title" class="text-xs uppercase tracking-[0.4em] font-black text-teal-400/60">Training Protocols</h2>
                     <div class="h-px w-24 bg-white/10 ml-6"></div>
                 </div>
@@ -165,9 +165,9 @@
                 </div>
             </section>
 
-            <section class="relative p-12 rounded-[40px] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row items-center gap-12">
-                    <div class="flex-1 space-y-6">
+            <section class="relative p-6 sm:p-12 rounded-[40px] bg-gradient-to-br from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                    <div class="flex-1 space-y-4 sm:space-y-6">
                         <h3 id="why-title" class="text-3xl font-light tracking-tight text-white leading-tight">Master the Art of <br/><span class="font-bold text-teal-400">Normal Breathing</span></h3>
                         <p id="why-desc" class="text-slate-400 leading-relaxed text-sm max-w-lg">
                             Buteyko helps synchronize breathing with metabolic needs. High CO2 tolerance is the foundation of peak performance and deep recovery.
@@ -190,8 +190,8 @@
     </template>
 
     <template id="tpl-cp-test">
-        <div class="flex flex-col items-center py-12 fade-in">
-            <div class="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-6 sm:p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden flex flex-col min-h-[500px]">
+        <div class="flex flex-col items-center py-4 fade-in">
+            <div class="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-6 sm:p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden flex flex-col min-h-[400px]">
                 <div class="flex justify-between items-start mb-6 relative z-10 w-full">
                     <div>
                         <h2 id="diag-label" class="text-xs font-black text-teal-400 uppercase tracking-[0.3em]">Diagnostics</h2>
@@ -215,8 +215,8 @@
                         <ol id="protocol-steps" class="list-decimal list-inside space-y-2"></ol>
                     </div>
 
-                    <div class="flex flex-col items-center flex-1 justify-center py-4">
-                        <div id="cp-timer-display" class="text-8xl sm:text-9xl font-thin timer-val text-white tracking-tighter mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">0</div>
+                    <div class="flex flex-col items-center flex-1 justify-center py-2">
+                        <div id="cp-timer-display" class="text-7xl sm:text-9xl font-thin timer-val text-white tracking-tighter mb-6 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">0</div>
                         <div class="flex space-x-6">
                             <button id="cp-start-stop" class="w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 bg-teal-500 text-[#05070a] shadow-[0_0_50px_rgba(20,184,166,0.3)]">
                                 <i data-lucide="play" class="fill-current w-7 h-7 ml-1"></i>
@@ -269,8 +269,8 @@
     </template>
 
     <template id="tpl-session">
-        <div class="min-h-[85vh] flex flex-col pt-8 pb-12 fade-in">
-            <div class="flex gap-8 items-center justify-center mb-6 max-w-2xl mx-auto w-full">
+        <div class="min-h-screen flex flex-col pt-4 pb-8 fade-in">
+            <div class="flex gap-4 items-center justify-center mb-4 max-w-2xl mx-auto w-full">
                 <button id="session-back" class="flex items-center text-slate-500 hover:text-teal-400 transition-colors group text-xs tracking-widest uppercase font-bold">
                     <i data-lucide="arrow-left" class="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"></i>
                     <span id="session-back-text">Return to Protocol</span>
@@ -282,7 +282,7 @@
                 </button>
             </div>
 
-            <div id="settings-panel" class="hidden overflow-hidden mb-12 bg-white/[0.02] border border-white/5 rounded-[32px] p-8">
+            <div id="settings-panel" class="hidden overflow-hidden mb-6 bg-white/[0.02] border border-white/5 rounded-[32px] p-6 lg:p-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-6">
                         <div>
@@ -322,8 +322,8 @@
             </div>
 
             <div class="flex-1 flex flex-col items-center max-w-2xl mx-auto w-full">
-                <div class="text-center mb-12">
-                    <h2 id="session-title" class="text-4xl font-light text-slate-100 mb-4 tracking-tight">Session Title</h2>
+                <div class="text-center mb-6">
+                    <h2 id="session-title" class="text-3xl sm:text-4xl font-light text-slate-100 mb-2 tracking-tight">Session Title</h2>
                     <div class="flex items-center justify-center space-x-6 text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">
                         <span class="flex items-center">
                             <i data-lucide="clock" class="w-3.5 h-3.5 mr-2 text-teal-400"></i>
@@ -337,8 +337,8 @@
                 </div>
 
                 <!-- Pacer -->
-                <div class="flex flex-col items-center justify-center space-y-12 h-80">
-                    <div class="relative flex items-center justify-center w-[320px] h-[320px]">
+                <div id="pacer-container" class="flex flex-col items-center justify-center space-y-6 sm:space-y-12 h-64 sm:h-80">
+                    <div class="relative flex items-center justify-center w-[240px] h-[240px] sm:w-[320px] sm:h-[320px]">
                         <!-- Breathing Triangle SVG -->
                         <svg class="absolute w-full h-full inset-0 pointer-events-none overflow-visible z-20" viewBox="0 0 100 100">
                           <defs>
@@ -381,7 +381,7 @@
                     </div>
                 </div>
 
-                <div class="mt-16 flex flex-col items-center space-y-6">
+                <div class="mt-8 flex flex-col items-center space-y-4">
                     <button id="session-start" class="px-14 py-4 rounded-full text-sm font-black uppercase tracking-[0.3em] transition-all duration-500 transform active:scale-95 bg-teal-500 text-[#05070a] hover:bg-teal-400 shadow-[0_0_40px_rgba(20,184,166,0.3)]">
                         Commence
                     </button>
@@ -394,7 +394,7 @@
                     </button>
                 </div>
 
-                <div class="mt-16 p-8 bg-white/[0.03] rounded-[32px] border border-white/5 max-w-lg w-full">
+                <div class="mt-10 p-6 bg-white/[0.03] rounded-[32px] border border-white/5 max-w-lg w-full">
                     <h4 id="guide-label" class="font-bold text-teal-400 mb-3 text-[10px] uppercase tracking-[0.3em]">Protocol Guide</h4>
                     <p id="guide-desc" class="text-slate-400 text-sm leading-relaxed font-light">
                         Protocol instructions here.
@@ -1063,12 +1063,12 @@
             core.style.opacity = ui.opacity;
             
             inhaleInd.style.opacity = state.sessionTimer.phase === 'Inhale' ? '1' : '0.2';
-            inhaleInd.style.height = state.sessionTimer.phase === 'Inhale' ? '4.75rem' : '2.375rem';
-            document.getElementById('inhale-text').className = `text-[8px] uppercase tracking-[0.3em] font-bold mt-2 transition-colors duration-500 ${state.sessionTimer.phase === 'Inhale' ? 'text-teal-400' : 'text-slate-600'}`;
+            inhaleInd.style.height = state.sessionTimer.phase === 'Inhale' ? '2.5rem' : '1.25rem';
+            document.getElementById('inhale-text').className = `text-[8px] uppercase tracking-[0.3em] font-bold mt-1 transition-colors duration-500 ${state.sessionTimer.phase === 'Inhale' ? 'text-teal-400' : 'text-slate-600'}`;
 
             exhaleInd.style.opacity = state.sessionTimer.phase === 'Exhale' ? '1' : '0.2';
-            exhaleInd.style.height = state.sessionTimer.phase === 'Exhale' ? '4.75rem' : '2.375rem';
-            document.getElementById('exhale-text').className = `text-[8px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors duration-500 ${state.sessionTimer.phase === 'Exhale' ? 'text-teal-400' : 'text-slate-600'}`;
+            exhaleInd.style.height = state.sessionTimer.phase === 'Exhale' ? '2.5rem' : '1.25rem';
+            document.getElementById('exhale-text').className = `text-[8px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors duration-500 ${state.sessionTimer.phase === 'Exhale' ? 'text-teal-400' : 'text-slate-600'}`;
             
             if (ring) {
                 ring.style.opacity = state.sessionTimer.isRunning ? '1' : '0.5';

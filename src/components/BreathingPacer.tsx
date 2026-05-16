@@ -159,8 +159,8 @@ export default function BreathingPacer({
   const dotY = useTransform(progress, (s) => computePosition(s).y);
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-12 h-80">
-      <div className="relative flex items-center justify-center w-[320px] h-[320px]">
+    <div className="flex flex-col items-center justify-center space-y-4 sm:space-y-8 h-64 sm:h-80">
+      <div className="relative flex items-center justify-center w-[240px] h-[240px] sm:w-[320px] sm:h-[320px]">
         {/* Breathing Clock SVG */}
         <svg className="absolute w-full h-full inset-0 pointer-events-none overflow-visible z-20" viewBox="0 0 100 100">
           <defs>
@@ -228,22 +228,22 @@ export default function BreathingPacer({
         {/* Indicators */}
         <div className="absolute top-0 flex flex-col items-center">
           <motion.div 
-            animate={{ height: phase === 'Inhale' ? 76 : 38, opacity: phase === 'Inhale' ? 1 : 0.2 }}
+            animate={{ height: phase === 'Inhale' ? 40 : 20, opacity: phase === 'Inhale' ? 1 : 0.2 }}
             className="w-px bg-gradient-to-b from-teal-400 to-transparent transition-all duration-500" 
           />
-          <span className={`text-[8px] uppercase tracking-[0.3em] font-bold mt-2 transition-colors duration-500 ${phase === 'Inhale' ? 'text-teal-400' : 'text-slate-600'}`}>{t.inhale}</span>
+          <span className={`text-[8px] uppercase tracking-[0.3em] font-bold mt-1 transition-colors duration-500 ${phase === 'Inhale' ? 'text-teal-400' : 'text-slate-600'}`}>{t.inhale}</span>
         </div>
         <div className="absolute bottom-0 flex flex-col items-center">
-          <span className={`text-[8px] uppercase tracking-[0.3em] font-bold mb-2 transition-colors duration-500 ${phase === 'Exhale' ? 'text-teal-400' : 'text-slate-600'}`}>{t.exhale}</span>
+          <span className={`text-[8px] uppercase tracking-[0.3em] font-bold mb-1 transition-colors duration-500 ${phase === 'Exhale' ? 'text-teal-400' : 'text-slate-600'}`}>{t.exhale}</span>
           <motion.div 
-            animate={{ height: phase === 'Exhale' ? 76 : 38, opacity: phase === 'Exhale' ? 1 : 0.2 }}
+            animate={{ height: phase === 'Exhale' ? 40 : 20, opacity: phase === 'Exhale' ? 1 : 0.2 }}
             className="w-px bg-gradient-to-t from-white/20 to-transparent transition-all duration-500" 
           />
         </div>
       </div>
 
       <div className="text-center">
-        <h3 className="text-2xl font-light tracking-[0.2em] text-slate-300 uppercase">
+        <h3 className="text-xl sm:text-2xl font-light tracking-[0.2em] text-slate-300 uppercase">
           {phase === 'Pause (Empty)' ? t.controlPause : phase === 'Inhale' ? t.inhale : phase === 'Exhale' ? t.exhale : t.pause}
         </h3>
       </div>

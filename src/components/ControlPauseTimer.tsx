@@ -77,7 +77,7 @@ export default function ControlPauseTimer({ onComplete, lang }: ControlPauseTime
   const chartData = [...records].reverse();
 
   return (
-    <div className="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-6 sm:p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden flex flex-col min-h-[500px]">
+    <div className="bg-white/[0.03] backdrop-blur-xl rounded-[40px] p-6 sm:p-10 border border-white/5 shadow-2xl max-w-md w-full mx-auto relative overflow-hidden flex flex-col min-h-[400px]">
       <div className="flex justify-between items-start mb-6 relative z-10 w-full">
         <div>
           <h2 className="text-xs font-black text-teal-400 uppercase tracking-[0.3em]">{t.diagnostics}</h2>
@@ -136,8 +136,8 @@ export default function ControlPauseTimer({ onComplete, lang }: ControlPauseTime
               )}
             </AnimatePresence>
 
-            <div className="flex flex-col items-center flex-1 justify-center py-4">
-              <div className="text-8xl sm:text-9xl font-thin tabular-nums text-white tracking-tighter mb-10 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+            <div className="flex flex-col items-center flex-1 justify-center py-2">
+              <div className="text-7xl sm:text-9xl font-thin tabular-nums text-white tracking-tighter mb-6 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                 {seconds}
               </div>
 
